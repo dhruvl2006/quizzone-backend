@@ -14,7 +14,7 @@ const port = process.env.PORT || 3000;
 
 app.use(
   cors({
-    origin: "https://quizzone-hqb0hhxtq-dhruv-lohars-projects.vercel.app",
+    origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })

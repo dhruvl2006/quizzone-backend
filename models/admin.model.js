@@ -5,7 +5,6 @@ const adminSchema = new mongoose.Schema(
     adminname: { type: String, required: true },
     adminemail: { type: String, required: true, unique: true, index: true },
     password: { type: String, required: true },
-    confirmpass: { type: String, required: true },
   },
   {
     collection: "admin-data",

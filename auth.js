@@ -6,6 +6,7 @@ const Admin = require("./models/admin.model");
 const Student = require("./models/student.model");
 const QuizInfo = require("./models/quizinfo.model");
 const SCQ = require("./models/scq.model");
+const bcrypt = require("bcrypt");
 
 require("dotenv").config();
 
@@ -67,11 +68,11 @@ app.post("/adminsignup", async (req, res) => {
     if (existingAdmin) {
       throw new Error("Admin with this email already exists.");
     }
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
     await Admin.create({
       adminname: req.body.adminname,
       adminemail: req.body.adminemail,
-      password: req.body.password,
-      confirmpass: req.body.confirmpass,
+      password: hashedPassword,
     });
     res.status(201).json({ status: "ok" });
   } catch (err) {
@@ -118,11 +119,11 @@ app.post("/studentsignup", async (req, res) => {
       .json({ status: "error", error: "Passwords do not match" });
   }
   try {
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
     await Student.create({
       studentname: req.body.studentname,
       studentemail: req.body.studentemail,
-      password: req.body.password,
-      confirmpass: req.body.confirmpass,
+      password: hashedPassword,
     });
     res.status(201).json({ status: "ok" });
   } catch (err) {

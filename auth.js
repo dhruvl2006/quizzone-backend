@@ -324,6 +324,12 @@ app.get("/questions/:testcode", async (req, res) => {
   }
 });
 
+app.get("/", async (req, res) => {
+  try {
+    res.json({ message: "Server is running" });
+  } catch (error) {}
+});
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });

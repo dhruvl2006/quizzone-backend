@@ -93,7 +93,7 @@ app.post("/adminlogin", async (req, res) => {
           name: admin.adminname,
           email: admin.adminemail,
         },
-        "secret123"
+        process.env.JWT_SECRET
       );
 
       return res.json({
@@ -148,7 +148,7 @@ app.post("/studentlogin", async (req, res) => {
           name: student.studentname,
           email: student.studentemail,
         },
-        "secret123"
+        process.env.JWT_SECRET
       );
 
       return res.json({

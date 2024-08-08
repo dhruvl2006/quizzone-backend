@@ -83,12 +83,18 @@ app.post("/adminsignup", async (req, res) => {
 
 app.post("/adminlogin", async (req, res) => {
   try {
-    const admin = await Admin.findOne({
-      adminemail: req.body.adminemail,
-      password: req.body.password,
-    });
+    const admin = await Admin.findOne({ adminemail: req.body.adminemail });
 
-    if (admin) {
+    if (!admin) {
+      return res.json({
+        status: "error",
+        user: false,
+        message: "Invalid email or password",
+      });
+    }
+    const isMatch = await bcrypt.compare(req.body.password, admin.password);
+
+    if (isMatch) {
       const token = jwt.sign(
         {
           name: admin.adminname,
@@ -96,7 +102,6 @@ app.post("/adminlogin", async (req, res) => {
         },
         process.env.JWT_SECRET
       );
-
       return res.json({
         status: "ok",
         user: token,
@@ -140,10 +145,18 @@ app.post("/studentlogin", async (req, res) => {
   try {
     const student = await Student.findOne({
       studentemail: req.body.studentemail,
-      password: req.body.password,
     });
 
-    if (student) {
+    if (!student) {
+      return res.json({
+        status: "error",
+        user: false,
+        message: "Invalid email or password",
+      });
+    }
+    const isMatch = await bcrypt.compare(req.body.password, student.password);
+
+    if (isMatch) {
       const token = jwt.sign(
         {
           name: student.studentname,
@@ -159,7 +172,11 @@ app.post("/studentlogin", async (req, res) => {
         useremail: student.studentemail,
       });
     } else {
-      return res.json({ status: "error", user: false });
+      return res.json({
+        status: "error",
+        user: false,
+        message: "Invalid email or password",
+      });
     }
   } catch (err) {
     console.error(err);

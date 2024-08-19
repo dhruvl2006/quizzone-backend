@@ -16,6 +16,10 @@ const scqQuestion = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    solution: {
+      type: String,
+      required: true,
+    },
     code: {
       type: String,
       required: true,

@@ -343,14 +343,14 @@ app.get("/questions/:testcode", async (req, res) => {
   }
 });
 
-app.post("/createAnswers/:testcode", async (req, res) => {
+app.post("/createAnswers", async (req, res) => {
   try {
-    const { testcode } = req.params;
     const createAnswers = await Answers.create({
       questions: req.body.questions,
       userAnswers: req.body.userAnswers,
       question: req.body.questions,
       testcode: req.body.testcode,
+      user: req.body.user,
     });
     res.json({ status: "ok", createAnswers: createAnswers });
   } catch (error) {

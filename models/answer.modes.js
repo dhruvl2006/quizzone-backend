@@ -22,6 +22,10 @@ const answers = new mongoose.Schema(
       type: String,
       required: true,
     },
+    user: {
+      type: String,
+      required: true,
+    },
   },
   {
     collection: "answers",

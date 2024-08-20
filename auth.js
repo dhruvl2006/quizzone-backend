@@ -350,7 +350,7 @@ app.post("/createAnswers", async (req, res) => {
       questions: req.body.questions,
       userAnswers: req.body.userAnswers,
       score: req.body.score,
-      testcode: req.body.testcode,
+      code: req.body.testcode,
       user: req.body.user,
     });
     res.json({ status: "ok", createAnswers: createAnswers });

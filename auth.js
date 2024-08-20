@@ -339,6 +339,7 @@ app.get("/questions/:testcode", async (req, res) => {
     res.json({ status: "ok", questions: getQuestions });
   } catch (error) {
     console.error(error);
+    console.log(error);
     res.status(500).json({ status: "error", error: "Server error" });
   }
 });

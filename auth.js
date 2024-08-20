@@ -343,7 +343,7 @@ app.get("/questions/:testcode", async (req, res) => {
   }
 });
 
-app.get("/createAnswers/:testcode", async (req, res) => {
+app.post("/createAnswers/:testcode", async (req, res) => {
   try {
     const { testcode } = req.params;
     const createAnswers = await Answers.create({

@@ -18,7 +18,7 @@ const answers = new mongoose.Schema(
       type: String,
       required: true,
     },
-    code: {
+    testcode: {
       type: String,
       required: true,
     },

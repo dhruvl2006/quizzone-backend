@@ -7,6 +7,7 @@ const Student = require("./models/student.model");
 const QuizInfo = require("./models/quizinfo.model");
 const SCQ = require("./models/scq.model");
 const bcrypt = require("bcrypt");
+const Answers = require("./models/answer.modes");
 
 require("dotenv").config();
 
@@ -338,6 +339,21 @@ app.get("/questions/:testcode", async (req, res) => {
     res.json({ status: "ok", questions: getQuestions });
   } catch (error) {
     console.error(error);
+    res.status(500).json({ status: "error", error: "Server error" });
+  }
+});
+
+app.get("/createAnswers/:testcode", async (req, res) => {
+  try {
+    const { testcode } = req.params;
+    const createAnswers = await Answers.create({
+      questions: req.body.questions,
+      userAnswers: req.body.userAnswers,
+      question: req.body.questions,
+      testcode: req.body.testcode,
+    });
+    res.json({ status: "ok", createAnswers: createAnswers });
+  } catch (error) {
     res.status(500).json({ status: "error", error: "Server error" });
   }
 });

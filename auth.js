@@ -7,7 +7,7 @@ const Student = require("./models/student.model");
 const QuizInfo = require("./models/quizinfo.model");
 const SCQ = require("./models/scq.model");
 const bcrypt = require("bcrypt");
-const Answers = require("./models/answer.modes");
+const Answers = require("./models/answer.model");
 
 require("dotenv").config();
 
@@ -349,12 +349,13 @@ app.post("/createAnswers", async (req, res) => {
     const createAnswers = await Answers.create({
       questions: req.body.questions,
       userAnswers: req.body.userAnswers,
-      question: req.body.questions,
+      score: req.body.score,
       testcode: req.body.testcode,
       user: req.body.user,
     });
     res.json({ status: "ok", createAnswers: createAnswers });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ status: "error", error: "Server error" });
   }
 });

@@ -363,13 +363,16 @@ app.post("/createAnswers", async (req, res) => {
   }
 });
 
-app.get("/getQuiz/:useremail", async (req, res) => {
+app.get("/getQuizHistory/:useremail", async (req, res) => {
   try {
     const useremail = req.params.useremail;
-    const questions = await QuizInfo.findOne({ useremail: useremail });
-    res.status(201).send({ status: "ok", questions: questions });
+    const quizzes = await QuizInfo.find({ useremail: useremail });
+    res.status(200).send({ status: "ok", quizzes: quizzes });
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    res
+      .status(500)
+      .send({ status: "error", message: "Failed to fetch quiz history" });
   }
 });
 

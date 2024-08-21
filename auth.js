@@ -366,7 +366,7 @@ app.post("/createAnswers", async (req, res) => {
 app.get("/getQuizHistory/:useremail", async (req, res) => {
   try {
     const useremail = req.params.useremail;
-    const quizzes = await QuizInfo.find({ useremail: useremail });
+    const quizzes = await Answers.find({ useremail: useremail });
     res.status(200).send({ status: "ok", quizzes: quizzes });
   } catch (error) {
     console.error(error);

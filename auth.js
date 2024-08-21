@@ -352,11 +352,24 @@ app.post("/createAnswers", async (req, res) => {
       score: req.body.score,
       testcode: req.body.testcode,
       user: req.body.user,
+      time: time,
+      quizTitle: quizTitle,
+      startDate: startDate,
     });
     res.json({ status: "ok", createAnswers: createAnswers });
   } catch (error) {
     console.error(error);
     res.status(500).json({ status: "error", error: "Server error" });
+  }
+});
+
+app.get("/getQuiz/:useremail", async (req, res) => {
+  try {
+    const useremail = req.params.useremail;
+    const questions = await QuizInfo.findOne({ useremail: useremail });
+    res.status(201).send({ status: "ok", questions: questions });
+  } catch (error) {
+    console.log(error);
   }
 });
 

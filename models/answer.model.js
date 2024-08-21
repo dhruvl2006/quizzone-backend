@@ -26,6 +26,18 @@ const answers = new mongoose.Schema(
       type: String,
       required: true,
     },
+    time: {
+      type: String,
+      required: true,
+    },
+    quizTitle: {
+      type: String,
+      required: true,
+    },
+    startDate: {
+      type: String,
+      required: true,
+    },
   },
   {
     collection: "answers",

@@ -346,7 +346,7 @@ app.get("/questions/:testcode", async (req, res) => {
 
 app.get("/quesAns/:testcode", async (req, res) => {
   try {
-    const { testcode } = req.params;
+    const testcode = req.params;
     const getQuestions = await SCQ.find({ code: testcode });
     res.json({ status: "ok", questions: getQuestions });
   } catch (error) {

@@ -352,9 +352,9 @@ app.post("/createAnswers", async (req, res) => {
       score: req.body.score,
       testcode: req.body.testcode,
       user: req.body.user,
-      time: time,
-      quizTitle: quizTitle,
-      startDate: startDate,
+      time: req.body.time,
+      quizTitle: req.body.quizTitle,
+      startDate: req.body.startDate,
     });
     res.json({ status: "ok", createAnswers: createAnswers });
   } catch (error) {

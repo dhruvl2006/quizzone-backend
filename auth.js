@@ -344,6 +344,18 @@ app.get("/questions/:testcode", async (req, res) => {
   }
 });
 
+app.get("/quesAns/:testcode", async (req, res) => {
+  try {
+    const { testcode } = req.params;
+    const getQuestions = await SCQ.find({ code: testcode });
+    res.json({ status: "ok", questions: getQuestions });
+  } catch (error) {
+    console.error(error);
+    console.log(error);
+    res.status(500).json({ status: "error", error: "Server error" });
+  }
+});
+
 app.post("/createAnswers", async (req, res) => {
   try {
     const createAnswers = await Answers.create({

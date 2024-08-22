@@ -4,8 +4,29 @@ const answers = new mongoose.Schema(
   {
     questions: [
       {
-        type: String,
-        required: true,
+        answer: {
+          type: String,
+          required: true,
+        },
+        code: {
+          type: String,
+          required: true,
+        },
+        options: {
+          type: Array,
+          required: true,
+        },
+        question: {
+          type: String,
+          required: true,
+        },
+        solution: {
+          type: String,
+        },
+        _id: {
+          type: String,
+          required: true,
+        },
       },
     ],
     userAnswers: [
@@ -23,8 +44,14 @@ const answers = new mongoose.Schema(
       required: true,
     },
     user: {
-      type: String,
-      required: true,
+      name: {
+        type: String,
+        required: true,
+      },
+      email: {
+        type: String,
+        required: true,
+      },
     },
     time: {
       type: String,

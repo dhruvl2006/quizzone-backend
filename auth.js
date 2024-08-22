@@ -62,7 +62,6 @@ app.post("/adminsignup", async (req, res) => {
       .json({ status: "error", error: "Passwords do not match" });
   }
   try {
-    console.log(req.body);
     const existingAdmin = await Admin.findOne({
       adminemail: req.body.adminemail,
     });
@@ -77,7 +76,7 @@ app.post("/adminsignup", async (req, res) => {
     });
     res.status(201).json({ status: "ok" });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ status: "error", error: err.message });
   }
 });
@@ -133,7 +132,7 @@ app.post("/studentsignup", async (req, res) => {
     });
     res.status(201).json({ status: "ok" });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     if (err.code === 11000) {
       res.status(400).json({ status: "error", error: "Duplicate email" });
     } else {
@@ -192,6 +191,7 @@ app.post("/quiz-data", async (req, res) => {
       quizDescription: req.body.quizDescription,
       questionTime: req.body.questionTime,
       code: req.body.code,
+      participants: [],
       email: req.body.email,
     });
     res.status(201).send({ message: "Quiz added" });
@@ -204,9 +204,7 @@ app.post("/quiz-data", async (req, res) => {
 app.post("/quizes", async (req, res) => {
   try {
     const email = req.body.email;
-    console.log(email);
     const getQuiz = await QuizInfo.find({ email: email });
-    console.log(getQuiz);
     return res.json({ status: "ok", quiz: getQuiz });
   } catch (error) {
     console.error(error);
@@ -288,7 +286,6 @@ app.get("/quizQuestions/scq/:code", async (req, res) => {
     let getQuestions;
     if (code) {
       getQuestions = await SCQ.find({ code: code });
-      console.log(getQuestions);
     } else {
       getQuestions = await SCQ.find({});
     }
@@ -328,7 +325,7 @@ app.get("/getQuiz/:testcode", async (req, res) => {
     const quiz = await QuizInfo.findOne({ code: testcode });
     res.status(201).send({ status: "ok", quiz: quiz });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 });
 
@@ -339,7 +336,6 @@ app.get("/questions/:testcode", async (req, res) => {
     res.json({ status: "ok", questions: getQuestions });
   } catch (error) {
     console.error(error);
-    console.log(error);
     res.status(500).json({ status: "error", error: "Server error" });
   }
 });
@@ -366,13 +362,77 @@ app.post("/createAnswers", async (req, res) => {
 app.get("/getQuizHistory/:useremail", async (req, res) => {
   try {
     const useremail = req.params.useremail;
-    const quizzes = await Answers.find({ user: useremail });
+    const quizzes = await Answers.find({ "user.email": useremail });
     res.status(200).send({ status: "ok", quizzes: quizzes });
   } catch (error) {
     console.error(error);
     res
       .status(500)
       .send({ status: "error", message: "Failed to fetch quiz history" });
+  }
+});
+
+app.post("/analysis/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const email = req.body.email;
+    const quizData = await Answers.findOne({
+      "user.email": email,
+      testcode: id,
+    });
+
+    res.status(200).send({
+      status: "ok",
+      questions: quizData.questions,
+      userAnswers: quizData.userAnswers,
+      score: quizData.score,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .send({ status: "error", message: "Failed to fetch quiz history" });
+  }
+});
+
+app.post("/checkAttempted/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const email = req.body.email;
+    const quizAttempt = await Answers.findOne({
+      testcode: id,
+      "user.email": email,
+    });
+    if (quizAttempt) {
+      res.status(200).send({ status: "ok" });
+    } else {
+      res.status(404).send({
+        status: "not_found",
+        message: "No attempt found for this quiz",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .send({ status: "error", message: "Failed to fetch quiz history" });
+  }
+});
+
+app.post("/addParticipants/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { Info } = req.body;
+    const participant = await QuizInfo.findOneAndUpdate(
+      { code: id },
+      { $push: { participants: Info } },
+      { new: true }
+    );
+    res.status(201).send({ status: "ok" });
+  } catch (error) {
+    res
+      .status(500)
+      .send({ status: "error", message: "Failed to fetch participants" });
   }
 });
 

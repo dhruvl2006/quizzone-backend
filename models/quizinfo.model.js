@@ -6,6 +6,19 @@ const quizInfo = new mongoose.Schema(
     quizDescription: { type: String },
     questionTime: { type: String, required: true },
     code: { type: String, required: true, unique: true },
+    participants: [
+      {
+        name: {
+          type: String,
+        },
+        email: {
+          type: String,
+        },
+        score: {
+          type: String,
+        },
+      },
+    ],
     email: { type: String, required: true },
   },
   {

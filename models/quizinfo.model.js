@@ -5,7 +5,7 @@ const quizInfo = new mongoose.Schema(
     quizTitle: { type: String, required: true },
     quizDescription: { type: String },
     questionTime: { type: String, required: true },
-    code: { type: String, required: true, unique: true },
+    code: { type: String, required: true },
     participants: [
       {
         name: {

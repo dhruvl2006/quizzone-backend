@@ -83,7 +83,9 @@ app.post("/adminsignup", async (req, res) => {
 
 app.post("/adminlogin", async (req, res) => {
   try {
-    const admin = await Admin.findOne({ adminemail: req.body.adminemail });
+    const { adminemail, password } = req.body;
+
+    const admin = await Admin.findOne({ adminemail });
 
     if (!admin) {
       return res.json({
@@ -92,7 +94,8 @@ app.post("/adminlogin", async (req, res) => {
         message: "Invalid email or password",
       });
     }
-    const isMatch = await bcrypt.compare(req.body.password, admin.password);
+
+    const isMatch = await bcrypt.compare(password, admin.password);
 
     if (isMatch) {
       const token = jwt.sign(
@@ -102,14 +105,17 @@ app.post("/adminlogin", async (req, res) => {
         },
         process.env.JWT_SECRET
       );
+
       return res.json({
         status: "ok",
         user: token,
-        username: admin.adminname,
-        useremail: admin.adminemail,
       });
     } else {
-      return res.json({ status: "error", user: false });
+      return res.json({
+        status: "error",
+        user: false,
+        message: "Invalid email or password",
+      });
     }
   } catch (err) {
     console.error(err);
@@ -168,8 +174,6 @@ app.post("/studentlogin", async (req, res) => {
       return res.json({
         status: "ok",
         user: token,
-        username: student.studentname,
-        useremail: student.studentemail,
       });
     } else {
       return res.json({
@@ -186,18 +190,25 @@ app.post("/studentlogin", async (req, res) => {
 
 app.post("/quiz-data", async (req, res) => {
   try {
-    const quiz = await QuizInfo.create({
-      quizTitle: req.body.quizTitle,
-      quizDescription: req.body.quizDescription,
-      questionTime: req.body.questionTime,
-      code: req.body.code,
-      participants: [],
-      email: req.body.email,
-    });
-    res.status(201).send({ message: "Quiz added" });
+    const code = req.body.code;
+    const findCode = await QuizInfo.findOne({ code: code });
+    const findAnsCode = await Answers.find({ testcode: code });
+    if (findCode || findAnsCode) {
+      res.status(201).send({ status: "code already in use" });
+    } else {
+      const quiz = await QuizInfo.create({
+        quizTitle: req.body.quizTitle,
+        quizDescription: req.body.quizDescription,
+        questionTime: req.body.questionTime,
+        code: req.body.code,
+        participants: [],
+        email: req.body.email,
+      });
+      res.status(201).send({ message: "Quiz added" });
+    }
   } catch (err) {
     console.error(err);
-    res.status(400).send({ status: "code already in use" });
+    res.status(400).send({ status: "Internal Server Error" });
   }
 });
 
@@ -225,17 +236,25 @@ app.get("/quiz/:id", async (req, res) => {
   }
 });
 
-app.delete("/quiz-data-delete", async (req, res) => {
+app.delete("/quiz-data-delete/:id", async (req, res) => {
   try {
-    const quiz = await QuizInfo.deleteOne({
-      _id: req.body.id,
-    });
+    const { id } = req.params;
 
-    if (quiz.deletedCount > 0) {
-      res.status(200).send({ status: "ok", message: "Quiz deleted" });
-    } else {
-      res.status(404).send({ status: "error", message: "Quiz not found" });
+    const quiz = await QuizInfo.findOne({ _id: id });
+
+    if (!quiz) {
+      return res
+        .status(404)
+        .send({ status: "error", message: "Quiz not found" });
     }
+
+    await QuizInfo.deleteOne({ _id: id });
+
+    const questions = await SCQ.deleteMany({ code: quiz.code });
+
+    res
+      .status(200)
+      .send({ status: "ok", message: "Quiz and associated questions deleted" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ status: "error", error: "Server error" });

@@ -190,25 +190,31 @@ app.post("/studentlogin", async (req, res) => {
 
 app.post("/quiz-data", async (req, res) => {
   try {
-    const code = req.body.code;
-    const findCode = await QuizInfo.findOne({ code: code });
-    const findAnsCode = await Answers.find({ testcode: code });
-    if (findCode || findAnsCode) {
-      res.status(201).send({ status: "code already in use" });
-    } else {
-      const quiz = await QuizInfo.create({
-        quizTitle: req.body.quizTitle,
-        quizDescription: req.body.quizDescription,
-        questionTime: req.body.questionTime,
-        code: req.body.code,
-        participants: [],
-        email: req.body.email,
-      });
-      res.status(201).send({ message: "Quiz added" });
+    const { code, quizTitle, quizDescription, questionTime, email } = req.body;
+
+    const findCode = await QuizInfo.findOne({ code });
+    if (findCode) {
+      return res.status(400).send({ status: "Code already in use for a quiz" });
     }
+
+    const findAnsCode = await Answers.findOne({ testcode: code });
+    if (findAnsCode) {
+      return res.status(400).send({ status: "Code already in use for a quiz" });
+    }
+
+    const quiz = await QuizInfo.create({
+      quizTitle,
+      quizDescription,
+      questionTime,
+      code,
+      participants: [],
+      email,
+    });
+
+    res.status(201).send({ message: "Quiz added successfully", quiz });
   } catch (err) {
     console.error(err);
-    res.status(400).send({ status: "Internal Server Error" });
+    res.status(500).send({ status: "Internal Server Error" });
   }
 });
 
